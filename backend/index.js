@@ -4,7 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 //connecting to the mongodb database
-require("./backend/models/db");
+require("./models/db");
 
 // Create Express application
 const app = express();
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 //importing the routes
-const { router } = require("./backend/routes");
+const { router } = require("./routes");
 app.use(router);
 
 // Start the server
