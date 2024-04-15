@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Table</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Custom CSS -->
+    <style>
+      /* Add custom styles here */
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>User Table</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <!-- User data will be dynamically added here -->
+        </tbody>
+      </table>
+      <!-- Add this modal markup after the table -->
+      <div
+        class="modal fade"
+        id="userModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="userModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="userModalLabel">User Details</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+              <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-5">
+        <h2>User Registration</h2>
+        <form id="registrationForm">
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- axios import -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+      // Handle form submission
+      $("#registrationForm").submit(function (event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+
+        // Get the form data
+        const formData = {
+          username: $("#username").val(),
+          email: $("#email").val(),
+          password: $("#password").val(),
+        };
+
+        // Make a POST request to register the user
+        axios
+          .post("http://localhost:3000/register", formData)
+          .then(function (response) {
+            // Handle success
+            console.log("User registered successfully");
+            // Optionally, you can redirect the user to a login page or display a success message
+          })
+          .catch(function (error) {
+            // Handle error
+            console.error("Error registering user: ", error);
+            // Optionally, you can display an error message to the user
+          });
+      });
+
+      $(document).ready(function () {
+        // Function to populate the table with user data
+        function populateTable(users) {
+          const tableBody = $("#userTableBody");
+          tableBody.empty(); // Clear previous data
+
+          users.forEach((user) => {
+            const row = $("<tr>");
+            row.append($("<td>").text(user.username));
+            row.append($("<td>").text(user.email));
+
+            // Add click event to open modal
+            row.click(function () {
+              $("#modalUsername").text(user.username);
+              $("#modalEmail").text(user.email);
+              $("#userModal").modal("show");
+            });
+
+            tableBody.append(row);
+          });
+        }
+
+        // Make a GET request to fetch user data
+        axios
+          .post("http://localhost:3000/getusers")
+          .then(function (response) {
+            // Handle success, update the table with user data
+            const users = response.data;
+            populateTable(users); // Assuming there's a function named populateTable to update the table
+          })
+          .catch(function (error) {
+            // Handle error
+            console.error("Error fetching user data: ", error);
+          });
+      });
+    </script>
+  </body>
+</html>
